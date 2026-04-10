@@ -243,7 +243,8 @@ void upload(unsigned int s1,const char *s2,const char *s3,const char *s4)
   delay(2000);
   lcd.setCursor(15, 1);lcd.print("U");
   myserialFlush();
-  mySerial.println("AT+CIPSTART=4,\"TCP\",\"projectsfactoryserver.in\",80");
+  mySerial.println("AT+CIPSTART=4,\"TCP\",\"iot-safety-system-default-rtdb.asia-southeast1.firebasedatabase.app\",443");
+  // mySerial.println("AT+CIPSTART=4,\"TCP\",\"projectsfactoryserver.in\",80");
     
   //http://projectsfactoryserver.in/storedata.php?name=pf5&s1=25&s2=35
   //sprintf(buff,"GET http://embeddedspot.top/iot/storedata.php?name=iot139&s1=%u&s2=%u&s3=%u\r\n\r\n",s1,s2);
@@ -252,7 +253,9 @@ void upload(unsigned int s1,const char *s2,const char *s3,const char *s4)
      
       
       memset(buff,0,strlen(buff));   
-      sprintf(buff,"GET http://projectsfactoryserver.in/storedata.php?name=iot1892&s1=%u&s2=%s&s3=%s&s4=%s\r\n\r\n",s1,s2,s3,s4);
+      // NEW (replace YOUR_DB_URL with your actual Firebase URL):
+      sprintf(buff,"PUT /safety_data.json HTTP/1.1\r\nHost: iot-safety-system-default-rtdb.asia-southeast1.firebasedatabase.app\r\nContent-Type: application/json\r\nContent-Length: 60\r\n\r\n{\"temp\":%u,\"smoke\":\"%s\",\"fire\":\"%s\",\"light\":\"%s\"}\r\n\r\n",s1,s2,s3,s4);
+      // sprintf(buff,"GET http://projectsfactoryserver.in/storedata.php?name=iot1892&s1=%u&s2=%s&s3=%s&s4=%s\r\n\r\n",s1,s2,s3,s4);
 //      buff = buff + moss + "\r\n\r\n";
      // strcat(buff,s3);
          
@@ -417,6 +420,8 @@ void wifiinit()
   if(check((char*)"OK",300))goto cagain;    
   mySerial.println("AT+CIPMUX=1");
   delay(1000);
+  mySerial.println("AT+CIPSSLSIZE=4096");
+  delay(500);
  
 
   lcd.clear();lcd.setCursor(0, 0);lcd.print("WIFI READY"); 
